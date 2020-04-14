@@ -54,18 +54,119 @@ enum Status : int32_t {
 ```
 - After performing all above steps, We have a folder for implementing HAL with structure like below
 ```
-hardware/interfaces/hvulight/
-└── 2.0
-    ├── Android.bp
-    ├── default
-    │   ├── Android.bp
-    │   ├── Hvulight.cpp
-    │   └── Hvulight.h
-    ├── IHvulight.hal
-    └── types.hal
+hardware/interfaces/hvulight/2.0
+├── Android.bp
+├── default
+│   ├── Android.bp
+│   ├── android.hardware.hvulight@2.0-service.rc
+│   ├── Hvulight.cpp
+│   ├── Hvulight.h
+│   └── service.cpp
+├── IHvulight.hal
+└── types.hal
 ```
 ### Acomplish HAL layer
-- Hvulight.h
+- ```default/Hvulight.h``` is header file of HAL implementation
+- ```default/Hvulight.cpp``` contains source code of HAL implementaion. After building this file, a shared library named ```android.hardware.hvulight@2.0-impl```, which is invoked by HIDL server in implementing time, will be created
+- ```default/service.cpp``` contains source code of HIDL server. Then it is built into ```android.hardware.hvulight@2.0-service``` service.
+```
+#define LOG_TAG "android.hardware.hvulight@2.0-service"
+
+#include <hidl/HidlSupport.h>
+#include <hidl/HidlTransportSupport.h>
+#include <android-base/logging.h>
+#include <android/hardware/hvulight/2.0/IHvulight.h>
+#include "Hvulight.h"
+
+using android::hardware::hvulight::V2_0::IHvulight;
+using android::hardware::hvulight::V2_0::implementation::Hvulight;
+using android::hardware::configureRpcThreadpool;
+using android::hardware::joinRpcThreadpool;
+using android::sp;
+using android::NO_ERROR;
+
+int main() {
+    LOG(INFO) << __func__ << " : Start HAL";
+    android::sp<IHvulight> hvulight = Hvulight::getInstance();
+
+    configureRpcThreadpool(1, true /*callerWillJoin*/);
+
+    if (hvulight != nullptr) {
+        auto rc = hvulight->registerAsService();
+        if (rc != NO_ERROR) {
+            LOG(ERROR) << "Cannot start Hvulight service: " << rc;
+            return rc;
+        }
+    } else {
+        LOG(ERROR) << "Can't create instance of Hvulight, nullptr";
+    }
+
+    joinRpcThreadpool();
+
+    return 0; // should never get here
+}
+```
+- ```default/android.hardware.hvulight@2.0-service.rc``` rc file contains action associated its service(which is ```android.hardware.hvulight@2.0-service``` in this case) and it will be parsed by init process. Having parsed and run this rc file, ```android.hardware.hvulight@2.0-service``` server will run and be available for invoking by clients since that time.
+```
+service vendor.hvulight-hal-2-0 /vendor/bin/hw/android.hardware.hvulight@2.0-service
+    interface android.hardware.hvulight@2.0::IHvulight default
+    class hal
+    user root
+    group root
+    shutdown critical
+```
+- ```Android.mk```(replaces ```Android.bp```) is makefile for compiling ```android.hardware.hvulight@2.0-service``` server binary and ```android.hardware.hvulight@2.0-impl.so``` shared library.
+```
+#===============================================
+# Makefile for compliling service binary
+#===============================================
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE_RELATIVE_PATH := hw
+LOCAL_PROPRIETARY_MODULE := true
+
+LOCAL_MODULE := android.hardware.hvulight@2.0-service
+LOCAL_INIT_RC := android.hardware.hvulight@2.0-service.rc
+LOCAL_SRC_FILES := \
+    service.cpp \
+
+LOCAL_SHARED_LIBRARIES := \
+    libcutils \
+    libdl \
+    libbase \
+    libutils \
+    libhardware \
+    libhidlbase \
+    libhidltransport \
+    android.hardware.hvulight@2.0 \
+    android.hardware.hvulight@2.0-impl \
+
+include $(BUILD_EXECUTABLE)
+
+
+
+#=================================================
+# Makefile for compiling implement shared library
+#=================================================
+include $(CLEAR_VARS)
+LOCAL_MODULE := android.hardware.hvulight@2.0-impl
+LOCAL_SRC_FILES := Hvulight.cpp
+
+LOCAL_SHARED_LIBRARIES := \
+    libbase \
+    liblog \
+    libhidlbase \
+    libhidltransport \
+    libhardware \
+    libutils \
+    android.hardware.hvulight@2.0 \
+
+LOCAL_MODULE_TAGS := optional
+
+include $(BUILD_SHARED_LIBRARY)
+```
+
 
 
 
