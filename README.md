@@ -144,8 +144,6 @@ LOCAL_SHARED_LIBRARIES := \
 
 include $(BUILD_EXECUTABLE)
 
-
-
 #=================================================
 # Makefile for compiling implement shared library
 #=================================================
