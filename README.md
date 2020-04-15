@@ -231,6 +231,9 @@ allow hal_hvulight_default sysfs_leds:file rw_file_perms;
 - Create ```com_android_server_hvulight_HvulightService.cpp``` for JNI layer
 - Modify ```frameworks/base/services/core/jni/onload.cpp``` to define JNI layer 
 - Modify ```frameworks/base/services/core/jni/Android.bp``` to build JNI layer
+- Update API
+```# make update-api```
+- And rebuile AOSP
 
 
 
