@@ -2,7 +2,7 @@
 This project focuses on programming a full-stack application in order to support new hardware in Android. My example is written on Android 9 for Sony Xperia XZ. The idea is to control indicator rdg led of Sony Xperia XZ. Based on my tutorial, Readers are able to program a full-stack aplication for any specific device with some changes.
 ## HAL Layer
 ### Create a sketch for HIDL interface
-These steps are responsible for creating new HAL layer sketch formated under HIDL(HAL interface definition language)
+These steps are for creating new HAL layer sketch formated under HIDL(HAL interface definition language)
 - Create all necessary folders
 ```
 # cd android_source_tree
