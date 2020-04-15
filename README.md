@@ -219,7 +219,18 @@ r_dir_rw_file(hal_hvulight_default, sysfs_msm_subsys)
 # Allow hal_hvulight_default to read and write  led device file in sysfs
 allow hal_hvulight_default sysfs_leds:file rw_file_perms;
 ```
+### HAL testing
 
+## System Service and JNI layer 
+### Sketch
+- Create ```IHvuledsService.aidl``` file in ```frameworks/base/core/java/android/os/``` for AIDL. This file declares abstract interface and class for System service
+- Modify ```frameworks/base/Android.bp``` to build ```IHvuledsService.aidl```
+- Create ```HvulightService.java``` file in ```frameworks/base/services/core/java/com/android/server/``` for system service. This file overrides class and method in AIDL file.
+- Modify ```frameworks/base/services/java/com/android/server/SystemServer.java``` to initialize the service in init process.
+- Modify ```frameworks/base/services/core/Android.bp``` to build java side of HIDL (HIDL's type will be used by Service)
+- Create ```com_android_server_hvulight_HvulightService.cpp``` for JNI layer
+- Modify ```frameworks/base/services/core/jni/onload.cpp``` to define JNI layer 
+- Modify ```frameworks/base/services/core/jni/Android.bp``` to build JNI layer
 
 
 
