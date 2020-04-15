@@ -2,13 +2,13 @@
 This project focuses on programming a full-stack application in order to support new hardware in Android. My example is written on Android 9 for Sony Xperia XZ. The idea is to control indicator rdg led of Sony Xperia XZ. Based on my tutorial, Readers are able to program a full-stack aplication for any specific device with some changes.
 ## HAL Layer
 ### Create a sketch for HIDL interface
-These step is responsible for creating new HAL layer sketch formated under HIDL(HAL interface definition language)
-- Creat all necessary folders
+These steps are responsible for creating new HAL layer sketch formated under HIDL(HAL interface definition language)
+- Create all necessary folders
 ```
 # cd android_source_tree
 # mkdir -p hardware/interfaces/hvulight/2.0/default
 ```
-- Creat 2 files in ```hardware/interfaces/hvulight/2.0```: IHvulight.hal and types.hal define interfaces and types of data respectively
+- Create 2 files in ```hardware/interfaces/hvulight/2.0```: IHvulight.hal and types.hal define interfaces and types of data respectively
 - IHvulight.hal content
 ```
 package android.hardware.hvulight@2.0;
@@ -35,7 +35,7 @@ enum Status : int32_t {
     UNKNOWN,
 };
 ```
-- Next, Use hidl-tools to generate HAL files(inplementing and Android.bp files in ```hardware/interfaces/hvulight/2.0/default```)
+- Next, Use hidl-tools to generate HAL files(source code and Android.bp files in ```hardware/interfaces/hvulight/2.0/default``` for HAL implementation)
 ```
 # PACKAGE=android.hardware.hvulight@2.0
 # LOC=hardware/interfaces/hvulight/2.0/default/
@@ -52,7 +52,7 @@ enum Status : int32_t {
 # touch hardware/interfaces/hvulight/2.0/default/service.cpp
 # touch hardware/interfaces/hvulight/2.0/default/android.hardware.hvulight@2.0-service.rc
 ```
-- After performing all above steps, We have a folder for implementing HAL with structure like below
+- Having performed all above steps, We have a folder for HAL layer with structure like below
 ```
 hardware/interfaces/hvulight/2.0
 ├── Android.bp
@@ -67,8 +67,8 @@ hardware/interfaces/hvulight/2.0
 ```
 ### Acomplish HAL layer
 - ```default/Hvulight.h``` is header file of HAL implementation
-- ```default/Hvulight.cpp``` contains source code of HAL implementaion. After building this file, a shared library named ```android.hardware.hvulight@2.0-impl```, which is invoked by HIDL server in implementing time, will be created
-- ```default/service.cpp``` contains source code of HIDL server. Then it is built into ```android.hardware.hvulight@2.0-service``` service.
+- ```default/Hvulight.cpp``` contains source code of HAL implementaion. After building this file, a shared library named ```android.hardware.hvulight@2.0-impl``` which is invoked by HIDL server in executing time, will be created
+- ```default/service.cpp``` contains source code of HIDL server. Then it is built into ```android.hardware.hvulight@2.0-service``` service binary.
 ```
 #define LOG_TAG "android.hardware.hvulight@2.0-service"
 
