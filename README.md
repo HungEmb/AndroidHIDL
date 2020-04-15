@@ -14,8 +14,10 @@ These steps are for creating new HAL layer sketch formated under HIDL(HAL interf
 package android.hardware.hvulight@2.0;
 
 interface IHvulight {
-    setLed(Led led, int32_t intensity) generates (Status status);
+    setLed(Led led, uint32_t intensity) generates (Status status);
+    getLed(Led led) generates (int32_t intensity);
 };
+
 ```
 - types.hal content
 ```
