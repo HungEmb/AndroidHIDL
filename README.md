@@ -1,7 +1,7 @@
 # Android full-stack Project
-This project focuses on programming a full-stack application in order to support new hardware in Android. My example is written on Android 9 for Sony Xperia XZ. The idea is to control indicator rdg led of Sony Xperia XZ. Based on my toturial, Readers are able to program a full-stack aplication for any specific device with some changes.
+This project focuses on programming a full-stack application in order to support new hardware in Android. My example is written on Android 9 for Sony Xperia XZ. The idea is to control indicator rdg led of Sony Xperia XZ. Based on my tutorial, Readers are able to program a full-stack aplication for any specific device with some changes.
 ## HAL Layer
-### Creat a sketch for HIDL interface
+### Create a sketch for HIDL interface
 These step is responsible for creating new HAL layer sketch formated under HIDL(HAL interface definition language)
 - Creat all necessary folders
 ```
@@ -163,6 +163,59 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_MODULE_TAGS := optional
 
 include $(BUILD_SHARED_LIBRARY)
+```
+### Add SElinux for HAL layer
+- Attach SElinux context to ```android.hardware.hvulight@2.0-service``` HIDL server binary. Add this line to ```file_contexts``` file in specific device's sepolicy folder( ```device/sony/sepolicy/vender/file_contexts``` in my case)
+```
+/(system/vendor|vendor)/bin/hw/android\.hardware\.hvulight@2\.0-service                 u:object_r:hal_hvulight_default_exec:s0
+```
+- Create ```hal_hvulight_default.te``` in ```system/sepolicy/vendor``` and Define rules so that init process can manipulate the ```android.hardware.hvulight@2.0-service``` HIDL server binary.
+```
+type hal_hvulight_default, domain;
+hal_server_domain(hal_hvulight_default, hal_hvulight)
+
+type hal_hvulight_default_exec, exec_type, vendor_file_type, file_type;
+init_daemon_domain(hal_hvulight_default)
+```
+  I will clarify above rules now. Having parsed sepolicy macros, this is content of above ```hal_hvulight_default.te``` file:
+```
+# define hal_hvulight_default domain for HIDL server
+type hal_hvulight_default, domain;
+
+typeattribute hal_hvulight_default halserverdomain;
+typeattribute hal_hvulight_default hal_light_server;
+typeattribute hal_hvulight_default hal_light;
+
+type hal_hvulight_default_exec, exec_type, vendor_file_type, file_type;
+
+# Old domain may exec the file and transition to the new domain.
+allow init hal_hvulight_default_exec:file { getattr open read execute map };
+allow init hal_hvulight_default:process transition;
+
+# New domain is entered by executing the file.
+allow hal_hvulight_default hal_hvulight_default_exec:file { entrypoint open read execute getattr map };
+
+# New domain can send SIGCHLD to its caller.
+ifelse(init, `init', `', `allow hal_hvulight_default init:process sigchld;')
+
+# Enable AT_SECURE, i.e. libc secure mode.
+dontaudit init hal_hvulight_default:process noatsecure;
+
+# XXX dontaudit candidate but requires further study.
+allow init hal_hvulight_default:process { siginh rlimitinh };
+
+# Convert from init domain into hal_hvulight_default for HIDL server process 
+# when init process runs hal_hvulight_default_exec file and forks new process
+# This new process will be attach hal_hvulight_default type
+type_transition init hal_hvulight_default_exec:process hal_hvulight_default;
+```
+- Define rules so that HAL's process can manipulate device file of led in sysfs
+```
+# Allow hal_hvulight_default process read and write sysfs_msm_subsys files
+r_dir_rw_file(hal_hvulight_default, sysfs_msm_subsys)
+
+# Allow hal_hvulight_default to read and write  led device file in sysfs
+allow hal_hvulight_default sysfs_leds:file rw_file_perms;
 ```
 
 
