@@ -1,0 +1,19 @@
+/*
+ * Written by HungVu<hungvu98.hust@gmail.com> in April 11, 2020
+ */
+
+package android.hardware.hvulight@2.0;
+
+enum Led : int32_t {
+	RED,
+	GREEN,
+	BLUE,
+	UNKNOWN,
+};
+
+enum Status : int32_t {
+	SUCCESS,
+	LED_NOT_SUPPORTED,
+	BRIGHTNESS_NOT_SUPPORTED,
+	UNKNOWN,
+};

@@ -1,0 +1,50 @@
+//===============================================
+// This file is automatically converted from Android.mk with androidmk tool
+// It is failed to build with this file. I wanna retain and revise it later for building with Soong build instead of GNU Make
+//===============================================
+
+//===============================================
+// Makefile for compliling service binary
+//===============================================
+
+cc_binary {
+    relative_install_path: "hw",
+    proprietary: true,
+
+    name: "android.hardware.hvuleds@2.0-service",
+    init_rc: ["android.hardware.hvuleds@2.0-service.rc"],
+    srcs: ["service.cpp"],
+
+    shared_libs: [
+        "libcutils",
+        "libdl",
+        "libbase",
+        "libutils",
+        "libhardware",
+        "libhidlbase",
+        "libhidltransport",
+        "android.hardware.hvuleds@2.0",
+        "android.hardware.hvuleds@2.0-impl",
+    ],
+
+}
+
+//=================================================
+// Makefile for compiling implement shared library
+//=================================================
+
+cc_library_shared {
+    name: "android.hardware.hvuleds@2.0-impl",
+    srcs: ["Hvuleds.cpp"],
+
+    shared_libs: [
+        "libbase",
+        "liblog",
+        "libhidlbase",
+        "libhidltransport",
+        "libhardware",
+        "libutils",
+        "android.hardware.hvuleds@2.0",
+    ],
+
+}

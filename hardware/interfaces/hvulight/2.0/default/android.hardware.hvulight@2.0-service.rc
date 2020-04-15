@@ -1,0 +1,6 @@
+service vendor.hvulight-hal-2-0 /vendor/bin/hw/android.hardware.hvulight@2.0-service
+    interface android.hardware.hvulight@2.0::IHvulight default
+    class hal
+    user root
+    group root
+    shutdown critical

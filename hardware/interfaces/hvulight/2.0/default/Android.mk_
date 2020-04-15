@@ -1,0 +1,27 @@
+#============================================
+# This Makefile is responsible for building HAL implementation and HIDL server in only one binary
+#============================================
+
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE_RELATIVE_PATH := hw
+LOCAL_PROPRIETARY_MODULE := true
+LOCAL_MODULE := android.hardware.hvulight@2.0-service.
+LOCAL_INIT_RC := android.hardware.hvulight@2.0-service.rc
+LOCAL_SRC_FILES := \
+    service.cpp \
+    Hvulight.cpp
+
+LOCAL_SHARED_LIBRARIES := \
+    libcutils \
+    libdl \
+    libbase \
+    libutils \
+    libhardware \
+    libhidlbase \
+    libhidltransport \
+    android.hardware.hvulight@2.0
+
+include $(BUILD_EXECUTABLE)
+
