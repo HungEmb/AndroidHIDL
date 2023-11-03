@@ -1,5 +1,5 @@
-# Android full-stack Project
-This project focuses on programming a full-stack application in order to support new hardware in Android. My example is written on Android 9 for Sony Xperia XZ. The idea is to control indicator rdg led of Sony Xperia XZ. Based on my tutorial, Readers are able to program a full-stack aplication for any specific device with some changes.
+# Android HIDL
+This project focuses on programming a HIDL example on Android after Treble. It is wrote to run on Sony Xperia Z1. Main purpose is to control the notification led
 ## HAL Layer
 ### Create a sketch for HIDL interface
 These steps are for creating new HAL layer sketch formated under HIDL(HAL interface definition language)
@@ -219,21 +219,6 @@ r_dir_rw_file(hal_hvulight_default, sysfs_msm_subsys)
 # Allow hal_hvulight_default to read and write  led device file in sysfs
 allow hal_hvulight_default sysfs_leds:file rw_file_perms;
 ```
-### HAL testing
-
-## System Service and JNI layer 
-### Sketch
-- Create ```IHvuledsService.aidl``` file in ```frameworks/base/core/java/android/os/``` for AIDL. This file declares abstract interface and class for System service
-- Modify ```frameworks/base/Android.bp``` to build ```IHvuledsService.aidl```
-- Create ```HvulightService.java``` file in ```frameworks/base/services/core/java/com/android/server/``` for system service. This file overrides class and method in AIDL file.
-- Modify ```frameworks/base/services/java/com/android/server/SystemServer.java``` to initialize the service in init process.
-- Modify ```frameworks/base/services/core/Android.bp``` to build java side of HIDL (HIDL's type will be used by Service)
-- Create ```com_android_server_hvulight_HvulightService.cpp``` for JNI layer
-- Modify ```frameworks/base/services/core/jni/onload.cpp``` to define JNI layer 
-- Modify ```frameworks/base/services/core/jni/Android.bp``` to build JNI layer
-- Update API
-```# make update-api```
-- And rebuile AOSP
 
 
 
